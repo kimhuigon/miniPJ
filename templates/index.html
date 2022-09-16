@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <title>유튜브 통계 top15!</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Noto Sans KR Regular', serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        #wrap {
+            width: 100%;
+        }
+
+        .tabmenu {
+            font-size: 0;
+        }
+
+        .tabmenu input[type="radio"] {
+            display: none;
+        }
+
+        .tabmenu label {
+            display: inline-block;
+            width: 25%;
+            background-color: crimson; /*#transparent*/
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            padding: 20px 0;
+
+        }
+
+        .tabmenu input[type="radio"]:checked + label {
+            color: white;
+            background-color: darkred;
+            font-weight: bold;
+        }
+
+        .tabmenu > div {
+            display: none;
+            min-height: 300px;
+            font-size: 17px;
+
+        }
+
+        .mypic {
+            width: 100%;
+            height: 300px;
+
+            margin-bottom: 40px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://cdn.pixabay.com/photo/2021/02/19/14/20/youtube-6030352_1280.png');
+
+            background-size: cover;
+            background-position: center;
+
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tabmenu #tab1:checked ~ #cont1,
+        .tabmenu #tab2:checked ~ #cont2,
+        .tabmenu #tab3:checked ~ #cont3,
+        .tabmenu #tab4:checked ~ #cont4 {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .tabmenu {
+            margin: 0px 50px 50px 70px;
+        }
+
+        .col {
+            width: 20%;
+        }
+
+
+        .col > .card{
+            width: 330px;
+            height: 450px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .card > img {
+            width: 100%;
+            /*height: 330px;*/
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/utkwv',
+                data: {},
+                success: function (response) {
+                    let rows = response['utkwvs']
+                    for (let i = 0; i < rows.length; i++) {
+                        let rank = rows[i]['ranks']
+                        let image = rows[i]['thums']
+                        let name = rows[i]['names']
+                        let view = rows[i]['views']
+                        let chel = rows[i]['chels']
+
+                        let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${image}"
+                                                     class="card-img-top">
+                                                <div class="card-body">
+                                                    <p>${rank}</p>
+                                                    <h5 class="card-title">${name}</h5>
+                                                    <p class="mycomment">${view}</p>
+                                                    <p class="card-text">${chel}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        $('#cont1').append(temp_html)
+                    }
+                }
+            })
+
+            $.ajax({
+                type: 'GET',
+                url: '/utktl',
+                data: {},
+                success: function (response) {
+                    let rows = response['utktls']
+                    for (let i = 0; i < rows.length; i++) {
+                        let rank = rows[i]['ranks']
+                        let image = rows[i]['thums']
+                        let name = rows[i]['names']
+                        let view = rows[i]['views']
+                        let chel = rows[i]['chels']
+
+                        let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${image}"
+                                                     class="card-img-top">
+                                                <div class="card-body">
+                                                    <p>${rank}</p>
+                                                    <h5 class="card-title">${name}</h5>
+                                                    <p class="mycomment">${view}</p>
+                                                    <p class="card-text">${chel}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        $('#cont2').append(temp_html)
+                    }
+                }
+            })
+
+            $.ajax({
+                type: 'GET',
+                url: '/utkml',
+                data: {},
+                success: function (response) {
+                    let rows = response['utkmls']
+                    for (let i = 0; i < rows.length; i++) {
+                        let rank = rows[i]['ranks']
+                        let image = rows[i]['thums']
+                        let name = rows[i]['names']
+                        let view = rows[i]['views']
+                        let chel = rows[i]['chels']
+
+                        let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${image}"
+                                                     class="card-img-top">
+                                                <div class="card-body">
+                                                    <p>${rank}</p>
+                                                    <h5 class="card-title">${name}</h5>
+                                                    <p class="mycomment">${view}</p>
+                                                    <p class="card-text">${chel}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        $('#cont3').append(temp_html)
+                    }
+                }
+            })
+
+            $.ajax({
+                type: 'GET',
+                url: '/utkwl',
+                data: {},
+                success: function (response) {
+                    let rows = response['utkwls']
+                    for (let i = 0; i < rows.length; i++) {
+                        let rank = rows[i]['ranks']
+                        let image = rows[i]['thums']
+                        let name = rows[i]['names']
+                        let view = rows[i]['views']
+                        let chel = rows[i]['chels']
+
+                        let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${image}"
+                                                     class="card-img-top">
+                                                <div class="card-body">
+                                                    <p>${rank}</p>
+                                                    <h5 class="card-title">${name}</h5>
+                                                    <p class="mycomment">${view}</p>
+                                                    <p class="card-text">${chel}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        $('#cont4').append(temp_html)
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+
+<body id="wrap">
+    <div class="mypic">
+        <h1>유튜브 통계 Top15</h1>
+    </div>
+
+    <div class="tabmenu">
+        <input type="radio" name="tab" id="tab1" checked>
+        <label for="tab1">한국 주간 조회수</label>
+        <input type="radio" name="tab" id="tab2">
+        <label for="tab2">한국 역대 좋아요 수</label>
+        <input type="radio" name="tab" id="tab3">
+        <label for="tab3">한국 월간 좋아요 수</label>
+        <input type="radio" name="tab" id="tab4">
+        <label for="tab4">한국 주간 좋아요 수</label>
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cont1"></div>
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cont2"></div>
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cont3"></div>
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="cont4"></div>
+    </div>
+</body>
+</html>
