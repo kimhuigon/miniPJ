@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- Bulma CSS 링크 -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <!--google font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@200&family=IBM+Plex+Sans+KR&display=swap" rel="stylesheet">
+        <!-- 공통 css -->
+        <link href='{{ url_for("static", filename="common.css") }}' rel="stylesheet">
+        <!--  목록 조회 css -->
+        <link href='{{ url_for("static", filename="list.css") }}' rel="stylesheet">
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+        <title>혼저옵서예</title>
+
+        <script>
+            {# 글 등록 #}
+            function go_write(){
+                window.location.href='/write'
+            }
+            {# 글 상세 #}
+            function go_detail(id) {
+                window.location.href='/detail/id?id_give=' + id
+            }
+            {# 글 삭제 #}
+            function go_delete(id) {
+                $.ajax({
+                    type: "POST",
+                    url: "/delete/id",
+                    data: {id_give: id},
+                    success: function (response) {
+                        if (confirm("정말로 삭제하시겠습니까?")) {
+                            alert(response["msg"])
+                            window.location.reload();
+                        }
+                        return;
+                    }
+                });
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="banner" onclick="window.location.href = '/'">
+            </div>
+            <div class="row">
+                <!--왼쪽 정보-->
+                <div class="col-4">
+                    <div class="mainpic">
+                        <img src="../static/mainJeju.png">
+                    </div>
+                    <div class="mainWrap">
+                        <div class="mainPost">
+                            <p>
+                                너와나<br>
+                                우리가 알고있는<br>
+                                제주 🔥 핫 플 🔥
+                            </p>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-dark" onclick="go_write()">글쓰기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!--오른쪽 정보-->
+                <div class="col-8" >
+                    <div class="title">
+                        <h1>🌴 Welcome - JEJU </h1>
+                    </div>
+                    <div class="card-columns" id="card-box">
+                        {% for post in all_list %}
+                            <div class="card">
+                                <img src="../static/img/{{ post.file }}" class="card-img-top">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ post.title }} 📌 {{ post.category }} </h5>
+                                    <hr/>
+                                    <p class="card-text">{{ post.content }}</p>
+                                    <p class="card-text" style="font-size: 12pt"> 등록일 : {{ post.date }}</p>
+                                </div>
+                                <div class="card-button" style="float: right; margin: 0 15px 15px 0;">
+                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="go_detail({{ post.id }})">글보기
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="go_delete({{ post.id }})">삭 제</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
