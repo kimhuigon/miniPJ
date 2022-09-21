@@ -1,0 +1,18 @@
+/* 게시글 등록/수정 css */
+
+.write-box {
+    margin-top: 70px;
+}
+
+.button-box {
+    margin: 50px 100px 0 0;
+    float: right;
+}
+
+.button-box > button {
+    margin-right: 10px;
+}
+
+.col-8 {
+    margin-top: 30px;
+}

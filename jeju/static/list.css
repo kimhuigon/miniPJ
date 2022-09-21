@@ -1,0 +1,14 @@
+/* 전체목록 카드 css */
+
+.card > img {
+    /*width: 300px;*/
+    /*height: 250px;*/
+    /*margin-left: 50px;*/
+}
+p {
+    margin-top: 10px
+}
+
+.col-8 {
+    margin-top: 30px;
+}

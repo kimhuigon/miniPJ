@@ -1,0 +1,38 @@
+/* 공통 css */
+
+* {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 15px;
+}
+
+.mainpic > img {
+    width: 350px;
+    height: 350px;
+    margin: 50px 0 0 120px;
+}
+
+.mainWrap {
+    text-align: center;
+
+}
+
+.mainWrap > div {
+    margin-top: 50px;
+}
+
+.col-4 {
+    height: 67pc;
+}
+.banner {
+    width: 100%;
+    height: 200px;
+
+    background-color: AliceBlue;
+    background-image: url('banner.png');
+
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    cursor: pointer;
+}
