@@ -87,3 +87,63 @@ def check_dup():
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
+
+    # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    @app.route('/')
+    def home():
+        return render_template('list.html')
+
+
+    @app.route('/diary', methods=['POST'])
+    def save_diary():
+        title_receive = request.form['title_give']
+        contnet_receive = request.form['content_give']
+        category_receive = request.form['category_give']
+        file = request.files["file_give"]
+
+        diary_list = list(db.diary.find({}, {'_id': False}))
+        count = len(diary_list) + 1
+
+        today = datetime.now()
+        # mytime =
+        date = today.strftime('%Y.%m.%d')
+
+        filename = file.filename.split('.')[0]
+
+        extension = file.filename.split('.')[-1]
+
+        save_to = f'static/{filename}.{extension}'
+        file.save(save_to)
+
+        diary_list = list(db.diary.find({}, {'_id': False}))
+        count = len(diary_list) + 1
+
+        doc = {
+
+            'id': count,
+            'title': title_receive,
+            'content': contnet_receive,
+            'category': category_receive,
+            'file': f'{filename}.{extension}',
+            'date': f'{date}',
+        }
+
+        db.diary.insert_one(doc)
+
+        return jsonify({'msg': '저장 완료!'})
+
+
+    @app.route('/diary', methods=['GET'])
+    def show_diary():
+        diaries = list(db.diary.find({}, {'_id': False}))
+        return jsonify({'all_diary': diaries})
+
+
+    @app.route('/diary/done', methods=['POST'])
+    def diary_done():
+        num_receive = request.form['num_give']
+        db.diary.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
+
+        return jsonify({'result': 'success', 'msg': '삭제완료!'})
+
+
