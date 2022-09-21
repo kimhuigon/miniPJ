@@ -22,6 +22,7 @@
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -40,6 +41,12 @@
         .usern {
             text-align: left;
         }
+        .media {
+            position: fixed;
+            bottom: 5%;
+            left: 2%;
+        }
+
         .lob {
             color: red;
             background-color: inherit;
@@ -47,6 +54,12 @@
             border-radius: 3px;
             font-weight: bold;
             padding: 5px 10px;
+            margin-left: 20px;
+        }
+        .btn {
+            position: fixed;
+            bottom: 5%;
+            right: 2%;
         }
     </style>
 
@@ -56,6 +69,8 @@
             alert('로그아웃!')
             window.location.href = "/login"
         }
+
+
         {# 글 등록 #}
 
         function go_write() {
@@ -104,9 +119,6 @@
                         우리가 알고있는<br>
                         제주 🔥 핫 플 🔥
                     </p>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-outline-dark" onclick="go_write()">글쓰기</button>
                 </div>
                 <section class="hero is-white">
                     <div class="hero-body" style="padding-bottom:1rem;margin:auto;min-width: 400px">
@@ -159,6 +171,9 @@
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+            <div>
+                <button type="button" class="btn btn-outline-dark" onclick="go_write()">글쓰기</button>
             </div>
         </div>
     </div>
