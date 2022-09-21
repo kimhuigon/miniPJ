@@ -14,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 SECRET_KEY = 'SPARTA'
 
 client = MongoClient('mongodb://3.36.123.144', 27017, username="test", password="test")
-db = client.loginplz
+db = client.LoginJeju
 
 
 @app.route('/')
