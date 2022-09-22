@@ -3,14 +3,14 @@
 <head>
 
     <!-- Webpage Title -->
-    <title>Log In | 좀 되라</title>
+    <title>Log In | 혼져옵서예</title>
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <meta property="og:title" content="login - 좀 되라"/>
+    <meta property="og:title" content="login - 혼져옵서예"/>
     <meta property="og:description" content="mini project for Web Plus"/>
     <meta property="og:image" content="{{ url_for('static', filename='ogimg.png') }}"/>
 
@@ -30,6 +30,20 @@
             min-height: 100vh;
         }
 
+        .banner {
+            width: 100%;
+            height: 200px;
+
+            background-color: AliceBlue;
+            background-image: url('../static/banner.png');
+
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+
+            cursor: pointer;
+        }
+
         .container {
             width: 480px;
             position: absolute;
@@ -37,6 +51,7 @@
             left: 35%;
             transform: translateY(-50%);
         }
+
         .box {
             border: 1px solid black;
         }
@@ -230,6 +245,7 @@
 
 </head>
 <body>
+<div class="banner" onclick="window.location.href = '/'"></div>
 <section class="section">
     <div class="container">
         <div class="box" style="max-width: 480px;margin:auto">
