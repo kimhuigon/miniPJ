@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
+    <style>
+        h1 {
+            display: none;
+        }
+
+        body {
+            background-repeat: no-repeat;
+            background-image: url("https://i.esdrop.com/d/f/GYVxSLda8V/0fa15NzQfr.jpg");
+            background-size: cover;
+        }
+
+        .posting-box {
+            width: 600px;
+            margin-top: 20px;
+            display: none;
+
+        }
+
+        .wrap {
+            width: 1300px;
+            margin: auto;
+        }
+
+        .container {
+            padding-left: 200px;
+        }
+
+        .posting-box > .custom-file {
+            margin-bottom: 20px;
+        }
+
+        card {
+            margin-top: 20px;
+            border-radius: 50px 50px 50px 50px;
+            opacity: 0.7;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+
+        card:hover {
+            transform: scale(1.1);
+            transition: 0.7s;
+            opacity: 1;
+        }
+
+        .card-img-top {
+            border-radius: 20px;
+        }
+        #button{
+           margin-left: 380px;
+        }
+
+
+
+
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+            listing()
+        })
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/diary",
+                data: {},
+                success: function (response) {
+                    let diaries = response['all_diary']
+                    for (let i = 0; i < diaries.length; i++) {
+                        let title = diaries[i]['title']
+                        let content = diaries[i]['content']
+                        let category = diaries[i]['category']
+                        let file = diaries[i]['file']
+                        let num = diaries[i]['num']
+                        let done = diaries[i]['done']
+
+
+                        let temp_html = `<div class="card">
+    <img src="../static/${file}" class="card-img-top">
+    <div class="card-body">
+        <p>${category}</p>
+      <h5 class="card-title">${title}</h5>
+      <p class="card-text">${content}</p>
+      <button type="button" class="btn btn-danger"onclick="done_diary(${num})">삭제</button>
+    </div>
+
+
+  </div>\``
+
+
+                        $('#diary-list').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function posting() {
+            let title = $('#title').val()
+            let content = $("#content").val()
+            let category = $('#category').val()
+
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("file_give", file)
+            form_data.append("title_give", title)
+            form_data.append("content_give", content)
+            form_data.append("category_give", category)
+
+            $.ajax({
+                type: "POST",
+                url: "/diary",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function done_diary(num) {
+            $.ajax({
+                type: "POST",
+                url: `/diary/done`,
+                data: {num_give:num},
+                success: function (response) {
+                    alert(response["msg"])
+                }
+            });
+        }
+
+
+        function open_box() {
+            $('#post-box').show()
+        }
+
+        function close_box() {
+            $('#post-box').hide()
+        }
+
+
+
+
+    </script>
+</head>
+
+
+<body>
+<div class="wrap">
+
+    <div class="card-columns" id="diary-list">
+
+
+    </div>
+
+    <button type="button" class="btn btn-outline-light" onclick="open_box()">글쓰기</button>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1>혼저옵서예~~</h1>
+            <div class="posting-box" id="post-box">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">제목</label>
+                    <input type="email" class="form-control" id="title" placeholder="내용을입력하세요">
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1" id="">카테고리</label>
+                    <select class="form-control" id="category">
+                        <option>관광</option>
+                        <option>음식</option>
+                        <option>숙박</option>
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">내용</label>
+                    <textarea class="form-control" id="content" rows="3" placeholder="내용을입력하세요"></textarea>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file">
+                    <label class="custom-file-label" for="file">사진선택</label>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="posting()">등록</button>
+                <button type="button" class="btn btn-dark" onclick="close_box()">취소</button>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
