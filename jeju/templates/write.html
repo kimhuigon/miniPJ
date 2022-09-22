@@ -4,39 +4,36 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+         <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <!-- Bulma CSS 링크 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
         <!--google font-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@200&family=IBM+Plex+Sans+KR&display=swap"
-              rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@200&family=IBM+Plex+Sans+KR&display=swap" rel="stylesheet">
         <!-- 공통 css -->
         <link href='{{ url_for("static", filename="common.css") }}' rel="stylesheet">
-        <!--  목록 조회 css -->
-        <link href='{{ url_for("static", filename="list.css") }}' rel="stylesheet">
+        <!-- 글 등록/수정 css -->
+        <link href='{{ url_for("static", filename="write.css") }}' rel="stylesheet">
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-                crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-        <title> 혼저옵서예 </title>
+        <!--파일업로드 라이브러리-->
+        <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
+        <title>혼저옵서예</title>
 
         <script>
             $(document).ready(function () {
+                <!--input file란에 파일명 나타남-->
                 set_temp()
-            });
+                bsCustomFileInput.init()
+            })
 
             {# 제주 날씨 #}
             function set_temp() {
@@ -58,33 +55,41 @@
                 window.location.href = "/login"
             }
 
+            {# 메인으로 #}
+            function go_list() {
+                window.location.href = '/'
+            }
+
             {# 글 등록 #}
-            function go_write() {
-                window.location.href = '/write'
-            }
+            function add_post() {
+                let category = $('#category').val();
+                let title = $('#title').val();
+                let content = $("#content").val();
 
-            {# 글 상세 #}
-            function go_detail(id) {
-                window.location.href = '/detail/id?id_give=' + id
-            }
+                let file = $('#file')[0].files[0];
+                let form_data = new FormData();
 
-            {# 글 삭제 #}
-            function go_delete(id) {
+                form_data.append("category_give", category)
+                form_data.append("title_give", title)
+                form_data.append("content_give", content)
+                form_data.append("file_give", file)
+
                 $.ajax({
                     type: "POST",
-                    url: "/delete/id",
-                    data: {id_give: id},
+                    url: "/add",
+                    data: form_data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
                     success: function (response) {
-                        if (confirm("정말로 삭제하시겠습니까?")) {
-                            alert(response["msg"])
-                            window.location.reload();
-                        }
-                        return;
+                        alert(response["msg"])
+                        go_list();
                     }
                 });
             }
         </script>
     </head>
+
     <body>
         <div class="container-fluid">
             <div class="banner" onclick="window.location.href = '/'">
@@ -134,31 +139,40 @@
                 <!--오른쪽 정보-->
                 <div class="col-8">
                     <div class="title">
-                        <h1>🌴 Welcome - JEJU </h1>
+                        <h1>글 등록 ✍</h1>
                     </div>
-                    <div class="card-columns" id="card-box">
-                        {% for post in all_list %}
-                            <div class="card">
-                                <img src="../static/img/{{ post.file }}" class="card-img-top">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ post.title }} 📌 {{ post.category }} </h5>
-                                    <hr/>
-                                    <p class="card-text">{{ post.content }}</p>
-                                    <p class="card-text" style="font-size: 12pt"> 등록일 : {{ post.date }}</p>
-                                </div>
-                                <div class="card-button" style="float: right; margin: 0 15px 15px 0;">
-                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="go_detail({{ post.id }})">
-                                        글보기
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="go_delete({{ post.id }})">
-                                        삭 제
-                                    </button>
+                    <div class="write-box">
+                        <div class="form-group row">
+                            <label for="category" class="col-sm-1 col-form-label">카테고리</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="category" placeholder="카데고리를 입력하세요">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="title" class="col-sm-1 col-form-label">제 목</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="content" class="col-sm-1 col-form-label">내 용</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="content" rows="7"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="file" class="col-sm-1 col-form-label">첨부파일</label>
+                            <div class="col-sm-10">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="file">
+                                    <label class="custom-file-label" for="file"></label>
                                 </div>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-                    <div class="writebtn-box">
-                        <button type="button" class="btn btn-outline-dark" onclick="go_write()">글쓰기</button>
+                    <div class="button-box">
+                        <button type="button" class="btn btn-info" onclick="add_post()">등 록</button>
+                        <button type="button" class="btn btn-secondary" onclick="go_list()">뒤 로</button>
                     </div>
                 </div>
             </div>

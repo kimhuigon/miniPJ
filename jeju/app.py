@@ -22,7 +22,10 @@ def home():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({"username": payload["id"]})
-        return render_template('list.html', user_info=user_info)
+
+        # 글 목록 전체 리스트
+        all_list = list(db.post.find({}, {'_id': False}))
+        return render_template('list.html', user_info=user_info, all_list=all_list)
 
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
@@ -83,58 +86,135 @@ def check_dup():
     exists = bool(db.users.find_one({"username": username_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
-@app.route('/post', methods=['POST'])
-def save_diary():
-    title_receive = request.form['title_give']
-    contnet_receive = request.form['content_give']
+@app.route("/write")
+def write():
+    # 글 등록페이지로 이동
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
+
+        return render_template('write.html', user_info=user_info)
+
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+
+
+
+@app.route('/add', methods=['POST'])
+def add_post():
+    # 글 등록
     category_receive = request.form['category_give']
+    title_receive = request.form['title_give']
+    content_receive = request.form['content_give']
+
+    # 사진 업로드
     file = request.files["file_give"]
-
-    post_list = list(db.diary.find({}, {'_id': False}))
-    count = len(post_list) + 1
-
-    today = datetime.now()
-    # mytime =
-    date = today.strftime('%Y.%m.%d')
-
+    # 파일이름
     filename = file.filename.split('.')[0]
-
+    # 확장자
     extension = file.filename.split('.')[-1]
-
-    save_to = f'static/{filename}.{extension}'
+    # 사진 저장경로
+    save_to = f'static/img/{filename}.{extension}'
     file.save(save_to)
-
+    
+    # 날짜
+    today = datetime.now()
+    date = today.strftime('%Y.%m.%d')
+    
+    # 글 id값 생성
     post_list = list(db.post.find({}, {'_id': False}))
     count = len(post_list) + 1
 
     doc = {
-
         'id': count,
-        'title': title_receive,
-        'content': contnet_receive,
         'category': category_receive,
+        'title': title_receive,
+        'content': content_receive,
         'file': f'{filename}.{extension}',
-        'date': f'{date}',
+        'date': f'{date}'
     }
 
     db.post.insert_one(doc)
+    return jsonify({'msg': '등록 완료!'})
 
-    return jsonify({'msg': '저장 완료!'})
+@app.route("/detail/id")
+def detail_post():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
 
+        # 상세화면
+        id_give = request.args.get("id_give")
+        post = db.post.find_one({'id': int(id_give)})
+        print(post)
+        return render_template('detail.html', user_info=user_info, post=post)
 
-@app.route('/post', methods=['GET'])
-def show_diary():
-    posts = list(db.post.find({}, {'_id': False}))
-    return jsonify({'all_post': posts})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
+@app.route("/edit/id")
+def edit_post():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
 
-@app.route('/post/done', methods=['POST'])
-def diary_done():
-    num_receive = request.form['num_give']
-    db.post.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
+        # 글 수정 / 1. 기존에 등록한 데이터를 가져온다.
+        id_give = request.args.get("id_give")
+        post = db.post.find_one({'id': int(id_give)})
+        return render_template('edit.html', user_info=user_info, post=post)
 
-    return jsonify({'result': 'success', 'msg': '삭제완료!'})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
+@app.route("/update/id", methods=['POST'])
+def update_post():
+    # 글 수정 / 2. 수정된 내용을 업데이트한다.
+    # 글번호(id)값을 받아와서 해당되는 내용을 변경한다.
+    id_give = request.form['id_give']
+    category_give = request.form['category_give']
+    title_give = request.form['title_give']
+    content_give = request.form['content_give']
+
+    # 사진 업로드
+    file = request.files["file_give"]
+    # 파일 이름
+    filename = file.filename.split('.')[0]
+    # 확장자
+    extension = file.filename.split('.')[-1]
+    # 저장경로
+    save_to = f'static/img/{filename}.{extension}'
+    file.save(save_to)
+
+    # 날짜
+    today = datetime.now()
+    date = today.strftime('%Y.%m.%d')
+
+    # "/add"와 동일한 방법으로 업데이트 (단, 글번호(id)는 고유값이기 때문에 변경X )
+    db.post.update_one({'id': int(id_give)},
+                               {'$set': {'category': category_give,
+                                         'title': title_give,
+                                         'content': content_give,
+                                         'file': f'{filename}.{extension}',
+                                         'date': f'{date}'}
+                                })
+    return jsonify({'msg': '수정 완료!'})
+
+@app.route("/delete/id", methods=['POST'])
+def delete_post():
+    # 글 삭제
+    id_give = request.form['id_give']
+    db.post.delete_one({'id': int(id_give)})
+    print(id_give)
+    return jsonify({'msg': '삭제 완료!'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

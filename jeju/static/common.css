@@ -20,6 +20,14 @@
     margin-top: 50px;
 }
 
+.mainWrap > .mainPost > p {
+    font-size: 15pt;
+}
+
+.mainWrap > .temp > p {
+    font-size: 15pt;
+}
+
 .col-4 {
     height: 67pc;
 }
@@ -35,4 +43,36 @@
     background-repeat: no-repeat;
 
     cursor: pointer;
+}
+
+/* -- 로그인 후 회원정보 및 로그아웃 css -- */
+.image {
+    width: 40px;
+    height: 40px;
+}
+
+.usern {
+    /*text-align: left;*/
+}
+
+.media {
+    position: fixed;
+    bottom: 5%;
+    left: 2%;
+}
+
+.lob {
+    color: red;
+    background-color: inherit;
+    border: 2px solid;
+    border-radius: 3px;
+    font-weight: bold;
+    padding: 5px 10px;
+    margin-left: 20px;
+}
+
+.writebtn-box {
+    position: fixed;
+    bottom: 5%;
+    right: 2%;
 }

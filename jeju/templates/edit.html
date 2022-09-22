@@ -30,8 +30,29 @@
         <script>
             $(document).ready(function () {
                 <!--input file란에 파일명 나타남-->
+                set_temp()
                 bsCustomFileInput.init()
             })
+
+             {# 제주 날씨 #}
+            function set_temp() {
+                $.ajax({
+                    type: "GET",
+                    url: "http://spartacodingclub.shop/sparta_api/weather/jeju",
+                    data: {},
+                    success: function (response) {
+                        $('#temp').text(response['temp'])
+                        let temp = $('#temp').text().substring(0, 4)
+                        $('#temp').text(temp + 'º')
+                    }
+                })
+            }
+
+            function sign_out() {
+                $.removeCookie('mytoken', {path: '/'});
+                alert('로그아웃!')
+                window.location.href = "/login"
+            }
 
             {# 메인으로 #}
             function go_list() {
@@ -87,6 +108,31 @@
                                 제주 🔥 핫 플 🔥
                             </p>
                         </div>
+                        <div class="temp">
+                            <p>오늘의 제주 온도 ⛅</p><span id="tempicon"></span>
+                            <p id="temp"></p>
+                        </div>
+                        <section class="hero is-white">
+                            <div class="hero-body" style="padding-bottom:1rem;margin:auto;min-width: 400px">
+                                <article class="media">
+                                    <figure class="media-left" style="align-self: center">
+                                        <a class="image" href="#">
+                                            <img class="is-rounded" src="{{ url_for('static', filename=user_info.profile_pic_real) }}">
+                                        </a>
+                                    </figure>
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p class="usern">
+                                                <strong>{{ user_info.profile_name }}</strong>
+                                                <br>
+                                                {{ user_info.profile_info }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button class="lob" onclick="sign_out()">로그아웃</button>
+                                </article>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
