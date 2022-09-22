@@ -85,24 +85,22 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
-if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+ # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    @app.route('/')
+   @app.route('/')
     def home():
         return render_template('list.html')
 
 
-    @app.route('/diary', methods=['POST'])
+    @app.route('/post', methods=['POST'])
     def save_diary():
         title_receive = request.form['title_give']
         contnet_receive = request.form['content_give']
         category_receive = request.form['category_give']
         file = request.files["file_give"]
 
-        diary_list = list(db.diary.find({}, {'_id': False}))
-        count = len(diary_list) + 1
+        post_list = list(db.diary.find({}, {'_id': False}))
+        count = len(post_list) + 1
 
         today = datetime.now()
         # mytime =
@@ -115,8 +113,8 @@ if __name__ == '__main__':
         save_to = f'static/{filename}.{extension}'
         file.save(save_to)
 
-        diary_list = list(db.diary.find({}, {'_id': False}))
-        count = len(diary_list) + 1
+        post_list = list(db.post.find({}, {'_id': False}))
+        count = len(post_list) + 1
 
         doc = {
 
@@ -128,22 +126,37 @@ if __name__ == '__main__':
             'date': f'{date}',
         }
 
-        db.diary.insert_one(doc)
+        db.post.insert_one(doc)
 
         return jsonify({'msg': '저장 완료!'})
 
 
-    @app.route('/diary', methods=['GET'])
-    def show_diary():
-        diaries = list(db.diary.find({}, {'_id': False}))
-        return jsonify({'all_diary': diaries})
+    @app.route('/post', methods=['GET'])
+    def show_post():
+        posts = list(db.post.find({}, {'_id': False}))
+        return jsonify({'all_post': posts})
 
 
-    @app.route('/diary/done', methods=['POST'])
+    @app.route('/post/done', methods=['POST'])
     def diary_done():
         num_receive = request.form['num_give']
-        db.diary.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
+        db.post.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
 
         return jsonify({'result': 'success', 'msg': '삭제완료!'})
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', port=5000, debug=True)
+
 
 
