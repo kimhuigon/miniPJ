@@ -83,17 +83,6 @@ def check_dup():
     exists = bool(db.users.find_one({"username": username_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
-
-    # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/list.html')
-
-
-def home():
-    return render_template('list.html')
-
-
 @app.route('/post', methods=['POST'])
 def save_diary():
     title_receive = request.form['title_give']
