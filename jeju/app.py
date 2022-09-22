@@ -6,7 +6,6 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
-
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
@@ -48,8 +47,8 @@ def sign_in():
 
     if result is not None:
         payload = {
-         'id': username_receive,
-         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
 
@@ -66,13 +65,13 @@ def sign_up():
     email_receive = request.form['email_give']
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     doc = {
-        "username": username_receive,                               # 아이디
-        "password": password_hash,                                  # 비밀번호
-        "email": email_receive,                                     # 이메일!
-        "profile_name": username_receive,                           # 프로필 이름 기본값은 아이디
-        "profile_pic": "",                                          # 프로필 사진 파일 이름
-        "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
-        "profile_info": ""                                          # 프로필 한 마디
+        "username": username_receive,  # 아이디
+        "password": password_hash,  # 비밀번호
+        "email": email_receive,  # 이메일!
+        "profile_name": username_receive,  # 프로필 이름 기본값은 아이디
+        "profile_pic": "",  # 프로필 사진 파일 이름
+        "profile_pic_real": "profile_pics/profile_placeholder.png",  # 프로필 사진 기본 이미지
+        "profile_info": ""  # 프로필 한 마디
     }
     db.users.insert_one(doc)
     return jsonify({'result': 'success'})
@@ -85,78 +84,68 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
- # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-   @app.route('/')
-    def home():
-        return render_template('list.html')
+    # 추가파일입니다`-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    @app.route('/post', methods=['POST'])
-    def save_diary():
-        title_receive = request.form['title_give']
-        contnet_receive = request.form['content_give']
-        category_receive = request.form['category_give']
-        file = request.files["file_give"]
-
-        post_list = list(db.diary.find({}, {'_id': False}))
-        count = len(post_list) + 1
-
-        today = datetime.now()
-        # mytime =
-        date = today.strftime('%Y.%m.%d')
-
-        filename = file.filename.split('.')[0]
-
-        extension = file.filename.split('.')[-1]
-
-        save_to = f'static/{filename}.{extension}'
-        file.save(save_to)
-
-        post_list = list(db.post.find({}, {'_id': False}))
-        count = len(post_list) + 1
-
-        doc = {
-
-            'id': count,
-            'title': title_receive,
-            'content': contnet_receive,
-            'category': category_receive,
-            'file': f'{filename}.{extension}',
-            'date': f'{date}',
-        }
-
-        db.post.insert_one(doc)
-
-        return jsonify({'msg': '저장 완료!'})
+@app.route('/list.html')
 
 
-    @app.route('/post', methods=['GET'])
-    def show_post():
-        posts = list(db.post.find({}, {'_id': False}))
-        return jsonify({'all_post': posts})
+def home():
+    return render_template('list.html')
 
 
-    @app.route('/post/done', methods=['POST'])
-    def diary_done():
-        num_receive = request.form['num_give']
-        db.post.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
+@app.route('/post', methods=['POST'])
+def save_diary():
+    title_receive = request.form['title_give']
+    contnet_receive = request.form['content_give']
+    category_receive = request.form['category_give']
+    file = request.files["file_give"]
 
-        return jsonify({'result': 'success', 'msg': '삭제완료!'})
+    post_list = list(db.diary.find({}, {'_id': False}))
+    count = len(post_list) + 1
+
+    today = datetime.now()
+    # mytime =
+    date = today.strftime('%Y.%m.%d')
+
+    filename = file.filename.split('.')[0]
+
+    extension = file.filename.split('.')[-1]
+
+    save_to = f'static/{filename}.{extension}'
+    file.save(save_to)
+
+    post_list = list(db.post.find({}, {'_id': False}))
+    count = len(post_list) + 1
+
+    doc = {
+
+        'id': count,
+        'title': title_receive,
+        'content': contnet_receive,
+        'category': category_receive,
+        'file': f'{filename}.{extension}',
+        'date': f'{date}',
+    }
+
+    db.post.insert_one(doc)
+
+    return jsonify({'msg': '저장 완료!'})
 
 
+@app.route('/post', methods=['GET'])
+def show_diary():
+    posts = list(db.post.find({}, {'_id': False}))
+    return jsonify({'all_post': posts})
 
 
+@app.route('/post/done', methods=['POST'])
+def diary_done():
+    num_receive = request.form['num_give']
+    db.post.update_one({'num': int(num_receive)}, {'$set': {'done': 1}})
 
-
-
-
-
-
+    return jsonify({'result': 'success', 'msg': '삭제완료!'})
 
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
-
-
-
